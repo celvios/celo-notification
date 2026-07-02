@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  notification:
+    build: .
+    container_name: celo-notification
+    ports:
+      - "50057:50057"
+    environment:
+      NODE_ENV: production
+      GRPC_PORT: 50057
+      DB_HOST: celo-platform-postgres
+      DB_PORT: 5432
+      DB_NAME: celo_platform
+      DB_USER: postgres
+      DB_PASSWORD: password
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SES_FROM: ${AWS_SES_FROM}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_WHATSAPP_FROM: ${TWILIO_WHATSAPP_FROM}
+      TWILIO_SMS_FROM: ${TWILIO_SMS_FROM}
+    networks:
+      - celo-network
+
+networks:
+  celo-network:
+    external: true

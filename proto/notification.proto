@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc SendNotification(SendNotificationRequest)   returns (SendNotificationResponse);
+  rpc SendBulk(SendBulkRequest)                   returns (SendBulkResponse);
+  rpc GetDeliveryStatus(DeliveryStatusRequest)    returns (DeliveryStatusResponse);
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
+}
+
+enum NotificationChannel {
+  EMAIL    = 0;
+  WHATSAPP = 1;
+  SMS      = 2;
+}
+
+enum NotificationTemplate {
+  INVOICE_SENT      = 0;
+  INVOICE_REMINDER  = 1;
+  PAYMENT_RECEIVED  = 2;
+  INVOICE_OVERDUE   = 3;
+  SETTLEMENT_DONE   = 4;
+  WELCOME           = 5;
+}
+
+message NotificationPayload {
+  string business_name   = 1;
+  string contact_name    = 2;
+  string invoice_number  = 3;
+  string amount          = 4;
+  string currency        = 5;
+  string due_date        = 6;
+  string payment_link    = 7;
+  string extra           = 8; // JSON string for additional fields
+}
+
+message SendNotificationRequest {
+  string                  business_id = 1;
+  string                  to_email    = 2;
+  string                  to_phone    = 3;
+  NotificationChannel     channel     = 4;
+  NotificationTemplate    template    = 5;
+  NotificationPayload     payload     = 6;
+}
+
+message SendBulkRequest {
+  repeated SendNotificationRequest notifications = 1;
+}
+
+message SendNotificationResponse {
+  bool   success      = 1;
+  string notification_id = 2;
+  string message      = 3;
+}
+
+message SendBulkResponse {
+  int32 sent   = 1;
+  int32 failed = 2;
+}
+
+message DeliveryStatusRequest {
+  string notification_id = 1;
+}
+
+message DeliveryStatusResponse {
+  string notification_id = 1;
+  string status          = 2;
+  string channel         = 3;
+  string sent_at         = 4;
+  string failure_reason  = 5;
+}
+
+message ListNotificationsRequest {
+  string business_id = 1;
+  int32  limit       = 2;
+  int32  offset      = 3;
+}
+
+message ListNotificationsResponse {
+  repeated DeliveryStatusResponse notifications = 1;
+  int32 total                                   = 2;
+}
